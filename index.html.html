@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Hind:wght@400;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Hind', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 40px 20px 20px;
+  }
+
+  .emoji-big { font-size: 48px; display: block; margin-bottom: 10px; animation: bounce 2s infinite; }
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+  .title {
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(22px, 5vw, 42px);
+    font-weight: 800;
+    background: linear-gradient(90deg, #f7c59f, #e8a87c, #ffb347, #f7c59f);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200%;
+    animation: shimmer 3s infinite;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  @keyframes shimmer { 0%{background-position:0%} 100%{background-position:200%} }
+
+  .subtitle {
+    font-size: 18px;
+    color: #a8c8fa;
+    margin-bottom: 6px;
+  }
+
+  .tagline {
+    font-size: 14px;
+    color: #7fa8d4;
+    font-style: italic;
+    margin-bottom: 30px;
+  }
+
+  /* === CLOCK SECTION === */
+  .clock-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 0 20px 30px;
+  }
+
+  .clock-wrapper {
+    position: relative;
+  }
+
+  canvas#clock {
+    border-radius: 50%;
+    box-shadow: 0 0 40px rgba(168,200,250,0.4), 0 0 80px rgba(168,200,250,0.15);
+  }
+
+  .time-display {
+    text-align: center;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 16px;
+    padding: 16px 28px;
+    margin-top: 16px;
+  }
+
+  .digital-time {
+    font-family: 'Baloo 2', cursive;
+    font-size: 36px;
+    font-weight: 800;
+    color: #ffb347;
+    letter-spacing: 2px;
+  }
+
+  .time-words {
+    font-size: 14px;
+    color: #a8c8fa;
+    margin-top: 4px;
+  }
+
+  /* === LESSON SECTION === */
+  .lesson-section {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 20px 30px;
+  }
+
+  .section-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffb347;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  .card-icon { font-size: 28px; margin-bottom: 8px; }
+  .card-head { font-family: 'Baloo 2', cursive; font-size: 16px; font-weight: 700; color: #f7c59f; margin-bottom: 6px; }
+  .card-body { font-size: 13px; color: #c4daef; line-height: 1.6; }
+
+  /* === INTERACTIVE QUIZ === */
+  .quiz-section {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 20px 30px;
+  }
+
+  .quiz-box {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+  }
+
+  .quiz-q { font-size: 16px; color: #a8c8fa; margin-bottom: 16px; }
+
+  .mini-clock-container { display: inline-block; margin: 10px 0 20px; }
+
+  .options { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 16px; }
+
+  .opt-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.25);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 14px;
+    padding: 10px 18px;
+    cursor: pointer;
+    font-family: 'Hind', sans-serif;
+    transition: all 0.2s;
+  }
+  .opt-btn:hover { background: rgba(255,179,71,0.25); border-color: #ffb347; }
+  .opt-btn.correct { background: rgba(79,200,120,0.3); border-color: #4fc878; }
+  .opt-btn.wrong { background: rgba(220,80,80,0.3); border-color: #e05555; }
+
+  .feedback {
+    font-size: 15px;
+    margin-top: 14px;
+    min-height: 24px;
+    font-weight: 600;
+  }
+
+  .next-btn {
+    margin-top: 14px;
+    background: linear-gradient(135deg, #ffb347, #e8a87c);
+    border: none;
+    border-radius: 10px;
+    color: #1a1a2e;
+    font-family: 'Baloo 2', cursive;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 10px 24px;
+    cursor: pointer;
+    display: none;
+  }
+
+  /* === MANOJ SIR BLESSING === */
+  .blessing-section {
+    max-width: 680px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+  }
+
+  .blessing-card {
+    background: linear-gradient(135deg, rgba(255,179,71,0.15), rgba(232,168,124,0.1));
+    border: 2px solid rgba(255,179,71,0.4);
+    border-radius: 20px;
+    padding: 28px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .blessing-card::before {
+    content: '✨';
+    position: absolute;
+    font-size: 80px;
+    opacity: 0.07;
+    top: -10px;
+    right: -10px;
+  }
+
+  .sir-emoji { font-size: 52px; margin-bottom: 8px; }
+  .sir-name { font-family: 'Baloo 2', cursive; font-size: 20px; font-weight: 800; color: #ffb347; margin-bottom: 4px; }
+  .sir-title { font-size: 13px; color: #e8c89a; margin-bottom: 18px; }
+
+  .blessing-text {
+    font-family: 'Hind', sans-serif;
+    font-size: 15px;
+    color: #f0dfc0;
+    line-height: 1.8;
+    font-style: italic;
+    border-left: 3px solid #ffb347;
+    padding-left: 16px;
+    text-align: left;
+    margin-bottom: 16px;
+  }
+
+  .stars { font-size: 22px; letter-spacing: 4px; margin-top: 10px; }
+
+  .confetti {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 999;
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="emoji-big">⏰</span>
+  <div class="title">Ghar Pe Rehta Hai Ya Ghar Mein?</div>
+  <div class="subtitle">Maninder ke liye — Analog Clock Sikhao!</div>
+  <div class="tagline">Manoj Sir ke special ashirwad ke saath 🙏</div>
+</div>
+
+<!-- LIVE CLOCK -->
+<div class="clock-section">
+  <div class="clock-wrapper">
+    <canvas id="clock" width="220" height="220"></canvas>
+  </div>
+  <div class="time-display">
+    <div class="digital-time" id="digital">00:00:00</div>
+    <div class="time-words" id="timeWords">Loading...</div>
+  </div>
+</div>
+
+<!-- LESSON CARDS -->
+<div class="lesson-section">
+  <div class="section-title">🕐 Analog Clock Kaise Padhein?</div>
+  <div class="cards-grid">
+    <div class="card">
+      <div class="card-icon">🔴</div>
+      <div class="card-head">Ghante ki Sui (Hour)</div>
+      <div class="card-body">Chotti aur moti sui — yeh ghanta batati hai. Poori ghoom ne mein 12 ghante lagte hain!</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔵</div>
+      <div class="card-head">Minute ki Sui (Minute)</div>
+      <div class="card-body">Lambi sui — yeh minute batati hai. 1 poori chakkar = 60 minutes = 1 ghanta!</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚡</div>
+      <div class="card-head">Second ki Sui</div>
+      <div class="card-body">Bahut patli aur tez chalti sui — yeh seconds batati hai. Har second mein ek tick!</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔢</div>
+      <div class="card-head">Numbers ka matlab</div>
+      <div class="card-body">1–12 tak numbers hain. Minute ke liye: number × 5 = minutes! Jaise 3 matlab 15 minutes.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">📍</div>
+      <div class="card-head">12 Upar hota hai</div>
+      <div class="card-body">12 hamesha sabse upar. Dono suiyan yahan hon toh time hai exactly 12:00!</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🌞</div>
+      <div class="card-head">AM aur PM</div>
+      <div class="card-body">Raat 12 se dopahar 12 tak = AM. Dopahar se raat tak = PM. Subah 6 = 6 AM!</div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="quiz-section">
+  <div class="section-title">🎯 Quiz Time — Maninder, Time Batao!</div>
+  <div class="quiz-box">
+    <div class="quiz-q" id="quizQ">Is clock mein kya time hai?</div>
+    <div class="mini-clock-container">
+      <canvas id="quizClock" width="160" height="160"></canvas>
+    </div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Agli Question ➡</button>
+  </div>
+</div>
+
+<!-- MANOJ SIR BLESSING -->
+<div class="blessing-section">
+  <div class="blessing-card">
+    <div class="sir-emoji">👨‍🏫</div>
+    <div class="sir-name">Manoj Sir</div>
+    <div class="sir-title">Aapke pyare Guru ji</div>
+    <div class="blessing-text">
+      "Maninder beta, time sikhna bahut zaroori hai — zindagi mein har cheez time par hoti hai!
+      Tumhara dedication aur lagan dekhkar mujhe bahut khushi hoti hai. Analog clock thoda mushkil lagta hai shuru mein, lekin practice se sab aasaan ho jaata hai.
+      Mera ashirwad hamesha tumhare saath hai — seekhte raho, aage badhte raho! 🌟"
+    </div>
+    <div><strong style="color:#ffb347;">Best of luck Maninder!</strong> Tum zaroor seekh jaoge! 💪</div>
+    <div class="stars">⭐⭐⭐⭐⭐</div>
+  </div>
+</div>
+
+<canvas class="confetti" id="confetti" style="display:none;"></canvas>
+
+<script>
+const HOURS_COLOR = '#ff6b6b';
+const MINS_COLOR = '#4fc3f7';
+const SECS_COLOR = '#ffb347';
+
+function drawClock(canvas, h, m, s, showLabels=true) {
+  const ctx = canvas.getContext('2d');
+  const cx = canvas.width/2, cy = canvas.height/2;
+  const r = cx - 12;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // Face
+  ctx.beginPath();
+  ctx.arc(cx,cy,r,0,Math.PI*2);
+  ctx.fillStyle='#1e2a4a';
+  ctx.fill();
+  ctx.strokeStyle='rgba(168,200,250,0.5)';
+  ctx.lineWidth=3;
+  ctx.stroke();
+
+  // Tick marks
+  for(let i=0;i<60;i++){
+    const angle=i*Math.PI*2/60 - Math.PI/2;
+    const isMajor=i%5===0;
+    const len=isMajor?12:6;
+    const x1=cx+Math.cos(angle)*(r-3);
+    const y1=cy+Math.sin(angle)*(r-3);
+    const x2=cx+Math.cos(angle)*(r-3-len);
+    const y2=cy+Math.sin(angle)*(r-3-len);
+    ctx.beginPath();
+    ctx.moveTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.strokeStyle=isMajor?'rgba(255,255,255,0.8)':'rgba(255,255,255,0.3)';
+    ctx.lineWidth=isMajor?2.5:1;
+    ctx.stroke();
+  }
+
+  // Numbers
+  if(showLabels){
+    ctx.font=`bold ${Math.floor(r*0.18)}px Baloo 2, sans-serif`;
+    ctx.fillStyle='rgba(255,255,255,0.9)';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    for(let n=1;n<=12;n++){
+      const angle=n*Math.PI*2/12 - Math.PI/2;
+      const nr=r*0.72;
+      ctx.fillText(n, cx+Math.cos(angle)*nr, cy+Math.sin(angle)*nr);
+    }
+  }
+
+  function drawHand(angle, length, width, color, hasCap=true){
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(angle);
+    ctx.beginPath();
+    ctx.moveTo(0, length*0.18);
+    ctx.lineTo(0, -length);
+    ctx.strokeStyle=color;
+    ctx.lineWidth=width;
+    ctx.lineCap='round';
+    ctx.stroke();
+    if(hasCap){
+      ctx.beginPath();
+      ctx.arc(0,0,width*0.8,0,Math.PI*2);
+      ctx.fillStyle=color;
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  const hAngle=(h%12)*Math.PI*2/12 + m*Math.PI*2/(12*60) - Math.PI/2;
+  const mAngle=m*Math.PI*2/60 + s*Math.PI*2/(60*60) - Math.PI/2;
+  const sAngle=s*Math.PI*2/60 - Math.PI/2;
+
+  drawHand(hAngle, r*0.48, 5.5, HOURS_COLOR);
+  drawHand(mAngle, r*0.68, 3.5, MINS_COLOR);
+  drawHand(sAngle, r*0.75, 1.8, SECS_COLOR);
+
+  // Center dot
+  ctx.beginPath();
+  ctx.arc(cx,cy,6,0,Math.PI*2);
+  ctx.fillStyle='#fff';
+  ctx.fill();
+}
+
+function getTimeWords(h, m) {
+  const period = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  if(m === 0) return `Bilkul ${h12} baj gaye ${period}!`;
+  if(m === 15) return `${h12} baj ke pauna ghanta (quarter past)`;
+  if(m === 30) return `${h12} baj ke aadha ghanta (half past)`;
+  if(m === 45) return `${h12+1 > 12 ? 1 : h12+1} bajne mein 15 minute baaki`;
+  if(m < 30) return `${h12} baj ke ${m} minute ho gaye`;
+  return `${h12+1 > 12 ? 1 : h12+1} bajne mein ${60-m} minute baaki`;
+}
+
+function tickClock(){
+  const now = new Date();
+  const h=now.getHours(), m=now.getMinutes(), s=now.getSeconds();
+  drawClock(document.getElementById('clock'), h, m, s, true);
+  const hh=String(h).padStart(2,'0'),mm=String(m).padStart(2,'0'),ss=String(s).padStart(2,'0');
+  document.getElementById('digital').textContent=`${hh}:${mm}:${ss}`;
+  document.getElementById('timeWords').textContent=getTimeWords(h,m);
+}
+setInterval(tickClock, 1000);
+tickClock();
+
+// === QUIZ ===
+const questions = [
+  {h:3,m:0,answers:['3:00','6:00','9:00','12:00'],correct:'3:00'},
+  {h:6,m:30,answers:['6:30','7:30','5:30','6:00'],correct:'6:30'},
+  {h:12,m:0,answers:['12:00','6:00','3:00','9:00'],correct:'12:00'},
+  {h:9,m:15,answers:['9:15','3:15','9:45','9:30'],correct:'9:15'},
+  {h:7,m:45,answers:['7:45','8:45','7:15','8:15'],correct:'7:45'},
+  {h:2,m:30,answers:['2:30','2:00','3:30','2:15'],correct:'2:30'},
+];
+
+let qIdx=0, answered=false;
+
+function loadQuestion(){
+  answered=false;
+  const q=questions[qIdx];
+  document.getElementById('quizQ').textContent='Is clock mein kya time hai?';
+  document.getElementById('feedback').textContent='';
+  document.getElementById('nextBtn').style.display='none';
+  drawClock(document.getElementById('quizClock'), q.h, q.m, 0, false);
+  const opts=document.getElementById('options');
+  opts.innerHTML='';
+  q.answers.forEach(a=>{
+    const btn=document.createElement('button');
+    btn.className='opt-btn';
+    btn.textContent=a;
+    btn.onclick=()=>checkAnswer(a, q.correct);
+    opts.appendChild(btn);
+  });
+}
+
+function checkAnswer(chosen, correct){
+  if(answered) return;
+  answered=true;
+  const btns=document.querySelectorAll('.opt-btn');
+  btns.forEach(b=>{
+    if(b.textContent===correct) b.classList.add('correct');
+    else if(b.textContent===chosen) b.classList.add('wrong');
+  });
+  const fb=document.getElementById('feedback');
+  if(chosen===correct){
+    fb.textContent='✅ Sahi jawab! Bahut badhiya Maninder!';
+    fb.style.color='#4fc878';
+    launchConfetti();
+  } else {
+    fb.textContent=`❌ Galat! Sahi jawab tha: ${correct}`;
+    fb.style.color='#e05555';
+  }
+  document.getElementById('nextBtn').style.display='inline-block';
+}
+
+function nextQuestion(){
+  qIdx=(qIdx+1)%questions.length;
+  loadQuestion();
+}
+
+loadQuestion();
+
+// === CONFETTI ===
+function launchConfetti(){
+  const canvas=document.getElementById('confetti');
+  canvas.style.display='block';
+  const ctx=canvas.getContext('2d');
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+  const pieces=Array.from({length:80},()=>({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height-canvas.height,
+    w:8+Math.random()*8,
+    h:8+Math.random()*8,
+    color:['#ffb347','#4fc3f7','#ff6b6b','#4fc878','#fff'][Math.floor(Math.random()*5)],
+    rot:Math.random()*360,
+    vx:(Math.random()-0.5)*3,
+    vy:2+Math.random()*3,
+    vr:(Math.random()-0.5)*6
+  }));
+  let frame=0;
+  function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr;
+      ctx.save();
+      ctx.translate(p.x+p.w/2,p.y+p.h/2);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle=p.color;
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    });
+    frame++;
+    if(frame<120) requestAnimationFrame(animate);
+    else canvas.style.display='none';
+  }
+  animate();
+}
+</script>
+</body>
+</html>
